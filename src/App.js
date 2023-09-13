@@ -1,108 +1,84 @@
-import { Component } from 'react';
-import { getImages } from './utils/api_pixabay';
-import './App.css';
-import Searchbar from './components/Searchbar/Searchbar';
-import ImageGallery from './components/ImageGallery/ImageGallery';
-import ImageGalleryItem from './components/ImageGalleryItem/ImageGalleryItem';
-import Button from './components/Button/Button';
-import Modal from './components/Modal/Modal';
-import Loader from './components/Loader/Loader';
+import { getImages } from "./utils/api_pixabay";
+import "./App.css";
+import Searchbar from "./components/Searchbar/Searchbar";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import ImageGalleryItem from "./components/ImageGalleryItem/ImageGalleryItem";
+import Button from "./components/Button/Button";
+import Modal from "./components/Modal/Modal";
+import Loader from "./components/Loader/Loader";
+import { useState } from "react";
+import { useEffect } from "react";
 
-class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    hits: [],
-    loading: false,
-    modal: {
-      isOpen: false,
-      image: '',
-      alt: '',
-    },
-  };
+function App() {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [maxPages, setMaxPages] = useState(0);
+  const [hits, setHits] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [image, setImage] = useState("");
+  const [alt, setAlt] = useState("");
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { page, query } = this.state;
-    if (page !== prevState.page || query !== prevState.query) {
-      this.updateGallery();
+  useEffect(() => {
+    if (!query) {
+     return 
     }
-  }
+    updateGallery();
 
-  setNewQuery = value => {
-    this.setState({ query: value, hits: [], page: 1 });
+  }, [query, page]);
+  
+  const setNewQuery = (query) => {
+    setQuery(query);
+    setHits([]);
+    setPage(1);
   };
 
-  async updateGallery() {
-    this.setState({ loading: true });
+  async function updateGallery() {
+    setLoading(true);
     // Api handler
     try {
       const {
         data: { hits, total },
-      } = await getImages(this.state.query, this.state.page);
+      } = await getImages(query, page);
 
-      this.setState(pervState => {
-        return {
-          loading: false,
-          hits: [...pervState.hits, ...hits],
-          maxPages: total / 12,
-        };
+      setLoading(false);
+      setHits((prevHits) => {
+        return [...prevHits, ...hits];
       });
+      setMaxPages(total / 12);
     } catch (error) {
       console.error(error);
     }
   }
 
-  showModal = (img, alt) => {
-
-    this.setState(pervState => {
-      return {
-        modal: {
-          isOpen: !pervState.modal.isOpen,
-          image: img,
-          alt: alt,
-        },
-      };
-    });
-  }
-
-  closeModal = () => {
-    this.setState({ modal: { isOpen: false } });
-  }
-
-  loadMoreImages = () => {
-    
-    this.setState(pervState => {
-      return { page: pervState.page + 1 };
-    });
+  const showModal = (img, alt) => {
+    setModalOpen(true);
+    setImage(img);
+    setAlt(alt);
   };
 
-  render() {
-    return (
-      <div className="App">
-        <Searchbar queryHandler={this.setNewQuery} />
-        {this.state.hits.length !== 0 && (
-          <ImageGallery>
-            <ImageGalleryItem
-              showModal={this.showModal}
-              items={this.state.hits}
-            />
-          </ImageGallery>
-        )}
-        {this.state.loading && <Loader />}
-        {this.state.maxPages > this.state.page && (
-          <Button loadMoreImages={this.loadMoreImages} />
-        )}
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
-        {this.state.modal.isOpen && (
-          <Modal
-            image={this.state.modal.image}
-            alt={this.state.modal.alt}
-            closeModal={this.closeModal}
-          />
-        )}
-      </div>
-    );
-  }
+  const loadMoreImages = () => {
+    setPage((currentPage) => currentPage + 1);
+  };
+
+  return (
+    <div className="App">
+      <Searchbar queryHandler={setNewQuery} />
+      {hits.length !== 0 && (
+        <ImageGallery>
+          <ImageGalleryItem showModal={showModal} items={hits} />
+        </ImageGallery>
+      )}
+      {loading && <Loader />}
+      {maxPages > page && <Button loadMoreImages={loadMoreImages} />}
+
+      {modalOpen && <Modal image={image} alt={alt} closeModal={closeModal} />}
+    </div>
+  );
 }
 
 export default App;

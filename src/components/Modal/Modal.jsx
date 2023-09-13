@@ -1,41 +1,39 @@
-import { Component } from 'react';
 import PropTypes from "prop-types";
 import css from './Modal.module.css';
+import { useEffect } from "react";
 
-export default class Modal extends Component {
+export default function Modal (props) {
   
-  modalKeyboardHandler = (event) => {
+  const modalKeyboardHandler = (event) => {
     if(event.code === "Escape") {
-      this.props.closeModal();
+      props.closeModal();
     }
   } 
 
-  modalMouseHandler = (event) => {
+  const modalMouseHandler = (event) => {
     if(event.target.nodeName === "IMG"){
       return;
     }
-    this.props.closeModal();
+    props.closeModal();
   }
 
-  componentDidMount () {
-    document.addEventListener('keydown', this.modalKeyboardHandler);
+  useEffect(()=>{
+      document.addEventListener('keydown', modalKeyboardHandler);
     
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.modalKeyboardHandler);
-   
-  }
-  render() {
+    return ()=>{
+      document.removeEventListener('keydown', modalKeyboardHandler);
+    }
+  })
+  
     return (
-      <div className={css.Overlay} onClick={this.modalMouseHandler}>
+      <div className={css.Overlay} onClick={modalMouseHandler}>
         <div className={css.Modal}>
-          <img src={this.props.image} alt={this.props.alt} />
-          <div><p>{this.props.alt}</p></div>
+          <img src={props.image} alt={props.alt} />
+          <div><p>{props.alt}</p></div>
         </div>
       </div>
     );
-  }
+  
 }
 
 
