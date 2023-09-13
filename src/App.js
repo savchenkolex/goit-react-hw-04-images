@@ -20,6 +20,25 @@ function App() {
   const [alt, setAlt] = useState("");
 
   useEffect(() => {
+
+    async function updateGallery() {
+      setLoading(true);
+      // Api handler
+      try {
+        const {
+          data: { hits, total },
+        } = await getImages(query, page);
+  
+        setLoading(false);
+        setHits((prevHits) => {
+          return [...prevHits, ...hits];
+        });
+        setMaxPages(total / 12);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     if (!query) {
      return 
     }
@@ -33,23 +52,7 @@ function App() {
     setPage(1);
   };
 
-  async function updateGallery() {
-    setLoading(true);
-    // Api handler
-    try {
-      const {
-        data: { hits, total },
-      } = await getImages(query, page);
-
-      setLoading(false);
-      setHits((prevHits) => {
-        return [...prevHits, ...hits];
-      });
-      setMaxPages(total / 12);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  
 
   const showModal = (img, alt) => {
     setModalOpen(true);
