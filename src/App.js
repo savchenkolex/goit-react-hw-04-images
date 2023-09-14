@@ -20,7 +20,6 @@ function App() {
   const [alt, setAlt] = useState("");
 
   useEffect(() => {
-
     async function updateGallery() {
       setLoading(true);
       // Api handler
@@ -28,7 +27,7 @@ function App() {
         const {
           data: { hits, total },
         } = await getImages(query, page);
-  
+
         setLoading(false);
         setHits((prevHits) => {
           return [...prevHits, ...hits];
@@ -40,19 +39,16 @@ function App() {
     }
 
     if (!query) {
-     return 
+      return;
     }
     updateGallery();
-
   }, [query, page]);
-  
+
   const setNewQuery = (query) => {
     setQuery(query);
     setHits([]);
     setPage(1);
   };
-
-  
 
   const showModal = (img, alt) => {
     setModalOpen(true);
