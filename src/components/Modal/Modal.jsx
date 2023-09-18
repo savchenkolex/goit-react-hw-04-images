@@ -2,34 +2,37 @@ import PropTypes from "prop-types";
 import css from "./Modal.module.css";
 import { useEffect } from "react";
 
-export default function Modal(props) {
-  const modalKeyboardHandler = (event) => {
-    if (event.code === "Escape") {
-      props.closeModal();
-    }
-  };
+export default function Modal({closeModal, image, alt}) {
+  
 
   const modalMouseHandler = (event) => {
     if (event.target.nodeName === "IMG") {
       return;
     }
-    props.closeModal();
+    closeModal();
   };
 
   useEffect(() => {
+
+    const modalKeyboardHandler = (event) => {
+      if (event.code === "Escape") {
+        closeModal();
+      }
+    };
+
     document.addEventListener("keydown", modalKeyboardHandler);
 
     return () => {
       document.removeEventListener("keydown", modalKeyboardHandler);
     };
-  });
+  },[closeModal]);
 
   return (
     <div className={css.Overlay} onClick={modalMouseHandler}>
       <div className={css.Modal}>
-        <img src={props.image} alt={props.alt} />
+        <img src={image} alt={alt} />
         <div>
-          <p>{props.alt}</p>
+          <p>{alt}</p>
         </div>
       </div>
     </div>
