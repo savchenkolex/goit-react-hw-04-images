@@ -1,22 +1,22 @@
 import PropTypes from "prop-types";
 import css from "./ImageGalleryItem.module.css";
 
-export default function ImageGalleryItem({ items, showModal }) {
-  return items.map((item) => {
+export default function ImageGalleryItem({ webformatURL, tags, largeImageURL, showModal }) {
+  
     return (
-      <li key={item.id} className={css.ImageGalleryItem}>
+      <li className={css.ImageGalleryItem}>
         <img
           onClick={() => {
-            showModal(item.largeImageURL, item.tags);
+            showModal(largeImageURL, tags);
           }}
-          data-bigimg={item.largeImageURL}
+          data-bigimg={largeImageURL}
           className={css["ImageGalleryItem-image"]}
-          src={item.webformatURL}
-          alt={item.tags}
+          src={webformatURL}
+          alt={tags}
         />
       </li>
     );
-  });
+  
 }
 
 ImageGalleryItem.propTypes = {

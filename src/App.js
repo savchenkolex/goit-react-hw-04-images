@@ -2,7 +2,6 @@ import { getImages } from "./utils/api_pixabay";
 import "./App.css";
 import Searchbar from "./components/Searchbar/Searchbar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
-import ImageGalleryItem from "./components/ImageGalleryItem/ImageGalleryItem";
 import Button from "./components/Button/Button";
 import Modal from "./components/Modal/Modal";
 import Loader from "./components/Loader/Loader";
@@ -68,9 +67,7 @@ function App() {
     <div className="App">
       <Searchbar queryHandler={setNewQuery} />
       {hits.length !== 0 && (
-        <ImageGallery>
-          <ImageGalleryItem showModal={showModal} items={hits} />
-        </ImageGallery>
+        <ImageGallery showModal={showModal} items={hits}/>
       )}
       {loading && <Loader />}
       {maxPages > page && <Button loadMoreImages={loadMoreImages} />}
